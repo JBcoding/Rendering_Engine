@@ -38,7 +38,7 @@ public class Sphere extends Shape {
     }
 
     @Override
-    protected Vector3D getIntersectionPoint(Vector3D startPoint, Vector3D direction) {
+    protected Vector3D getIntersectionPoint(Vector3D startPoint, Vector3D direction, Shape shapeToIgnore) {
         // We inverse transform the direction instead of transforming the object
         direction = inverseTransformationMatrix.multiplyWithVector3D(direction);
         startPoint = transformPoint(startPoint, inverseTransformationMatrix);
@@ -104,5 +104,10 @@ public class Sphere extends Shape {
     protected Vector3D getLargestPointInBoundingBox() {
         double maxStretch = Math.max(Math.max(this.stretchX, this.stretchY), this.stretchZ);
         return center.add(transformationMatrix.multiplyWithVector3D(new Vector3D(radius * maxStretch, radius * maxStretch, radius * maxStretch)));
+    }
+
+    @Override
+    protected Shape getShape() {
+        return this;
     }
 }

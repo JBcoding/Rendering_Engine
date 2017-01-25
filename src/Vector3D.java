@@ -118,6 +118,10 @@ public class Vector3D {
         return new Vector3D(Math.min(x, v.x), Math.min(y, v.y), Math.min(z, v.z));
     }
 
+    public double getBoundingBoxVolumen(Vector3D v) {
+        return Math.abs((x - v.x) * (y - v.y) * (z - v.z));
+    }
+
     public String toString() {
         return "Vec3D(" + x + ", " + y + ", " + z + ")";
     }

@@ -1,4 +1,7 @@
-import java.awt.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by madsbjoern on 30/10/2016.
@@ -25,17 +28,8 @@ public class Triangle extends Shape {
         areaOfTriangleTimes2 = normalVector.getMagnitude();
         normalVector_dot_p1 = normalVector.dot(p1);
 
-        double smallestX = Math.min(p1.getX(), Math.min(p2.getX(), p3.getX())) - .1;
-        double smallestY = Math.min(p1.getY(), Math.min(p2.getY(), p3.getY())) - .1;
-        double smallestZ = Math.min(p1.getZ(), Math.min(p2.getZ(), p3.getZ())) - .1;
-
-        double largestX = Math.max(p1.getX(), Math.max(p2.getX(), p3.getX())) + .1;
-        double largestY = Math.max(p1.getY(), Math.max(p2.getY(), p3.getY())) + .1;
-        double largestZ = Math.max(p1.getZ(), Math.max(p2.getZ(), p3.getZ())) + .1;
-
-        boundingCubeStartPoint = new Vector3D(smallestX, smallestY, smallestZ);
-        boundingCubeEndPoint = new Vector3D(largestX, largestY, largestZ);
-
+        boundingCubeStartPoint = p1.getMinXYZ(p2).getMinXYZ(p3).sub(new Vector3D(.1, .1, .1));
+        boundingCubeEndPoint = p1.getMaxXYZ(p2).getMaxXYZ(p3).add(new Vector3D(.1, .1, .1));
     }
 
     @Override
@@ -54,7 +48,7 @@ public class Triangle extends Shape {
     }
 
     @Override
-    protected Vector3D getIntersectionPoint(Vector3D startPoint, Vector3D direction) {
+    protected Vector3D getIntersectionPoint(Vector3D startPoint, Vector3D direction, Shape shapeToIgnore) {
         /*
         plane Equation N_x (x - p1_x) + N_y (y - p1_y) + N_z (z - p1_z) = 0
         Line equation (x, y, z) = (o_x + d_x t, o_y + d_y t, o_z + d_z t), o = startPoint, d = direction
@@ -108,5 +102,10 @@ public class Triangle extends Shape {
     @Override
     protected Vector3D getLargestPointInBoundingBox() {
         return boundingCubeEndPoint;
+    }
+
+    @Override
+    protected Shape getShape() {
+        return this;
     }
 }

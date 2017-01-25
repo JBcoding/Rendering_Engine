@@ -150,6 +150,8 @@ public final class FileParser {
             }
         }
 
+        renderingEngine.groupUp();
+
         return renderingEngine;
     }
 }

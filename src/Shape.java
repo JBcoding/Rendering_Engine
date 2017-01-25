@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by madsbjoern on 30/10/2016.
@@ -31,19 +33,19 @@ public abstract class Shape {
     }
 
     public Color getColor(Vector3D startPoint, Vector3D direction, RenderingEngine renderingEngine) {
-        Vector3D hitPoint = getIntersectionPoint(startPoint, direction);
+        Vector3D hitPoint = getIntersectionPoint(startPoint, direction, null);
         Vector3D normalVector = getNormalVector(hitPoint, startPoint);
-        Color c = Utils.mergeColors(getColor(), Color.BLACK, renderingEngine.getLightIntensity(hitPoint, normalVector, this));
+        Color c = Utils.mergeColors(getColor(), Color.BLACK, renderingEngine.getLightIntensity(hitPoint, normalVector, getShape()));
         if (getTransparency() == 0 && getReflectiveness() == 0) {
             return c;
         }
         if (getTransparency() != 0) {
-            Color transparencyColor = renderingEngine.getColorByRaycast(hitPoint, direction, getTransparency(), this);
+            Color transparencyColor = renderingEngine.getColorByRaycast(hitPoint, direction, getTransparency(), getShape());
             c = Utils.mergeColors(transparencyColor, c, getTransparency());
         }
         if (getReflectiveness() != 0) {
             Vector3D reflectiveDirection = getReflectiveDirection(startPoint, direction, hitPoint);
-            Color reflectivenessColor = renderingEngine.getColorByRaycast(hitPoint, reflectiveDirection, getReflectiveness(), this);
+            Color reflectivenessColor = renderingEngine.getColorByRaycast(hitPoint, reflectiveDirection, getReflectiveness(), getShape());
             c = Utils.mergeColors(reflectivenessColor, c, getReflectiveness());
         }
         return c;
@@ -51,8 +53,8 @@ public abstract class Shape {
 
     protected abstract Vector3D getNormalVector(Vector3D hitPoint, Vector3D startPoint);
 
-    public double getDistance(Vector3D startPoint, Vector3D direction) {
-        Vector3D intersectionPoint = getIntersectionPoint(startPoint, direction);
+    public double getDistance(Vector3D startPoint, Vector3D direction, Shape shapeToIgnore) {
+        Vector3D intersectionPoint = getIntersectionPoint(startPoint, direction, shapeToIgnore);
         if (intersectionPoint == null) {
             return Double.MAX_VALUE;
         }
@@ -61,11 +63,13 @@ public abstract class Shape {
 
     protected abstract Vector3D getReflectiveDirection(Vector3D startPoint, Vector3D direction, Vector3D hitPoint);
 
-    protected abstract Vector3D getIntersectionPoint(Vector3D startPoint, Vector3D direction);
+    protected abstract Vector3D getIntersectionPoint(Vector3D startPoint, Vector3D direction, Shape shapeToIgnore);
 
     protected abstract Vector3D getSmallestPointInBoundingBox();
 
     protected abstract Vector3D getLargestPointInBoundingBox();
+
+    protected abstract Shape getShape();
 
     public void setColor(Color color) {
         this.color = color;
@@ -140,5 +144,10 @@ public abstract class Shape {
 
     public void removeByName(String name) { // overridden in group
         return;
+    }
+
+
+    public List<Shape> getShapes() {
+        return Arrays.asList(this);
     }
 }

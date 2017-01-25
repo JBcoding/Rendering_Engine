@@ -31,6 +31,19 @@ public class Group extends Shape {
         if (s.getClass() == Group.class) {
             ((Group)s).setParent(this);
         }
+
+        if (parent != null) {
+            parent.updateBoundingBox(this);
+        }
+    }
+
+    private void updateBoundingBox(Group g) {
+        boundingCubeStartPoint = boundingCubeStartPoint.getMinXYZ(g.getSmallestPointInBoundingBox());
+        boundingCubeEndPoint = boundingCubeEndPoint.getMaxXYZ(g.getLargestPointInBoundingBox());
+
+        if (parent != null) {
+            parent.updateBoundingBox(this);
+        }
     }
 
     @Override
@@ -44,12 +57,15 @@ public class Group extends Shape {
     }
 
     @Override
-    protected Vector3D getIntersectionPoint(Vector3D startPoint, Vector3D direction) {
+    protected Vector3D getIntersectionPoint(Vector3D startPoint, Vector3D direction, Shape shapeToIgnore) {
         if (isHittingBoundingCube(startPoint, direction)) {
             double smallestDistance = Double.MAX_VALUE;
             Vector3D closestPoint = null;
             for (Shape s : shapes) {
-                Vector3D intersectionPoint = s.getIntersectionPoint(startPoint, direction);
+                if (s == shapeToIgnore) {
+                    continue;
+                }
+                Vector3D intersectionPoint = s.getIntersectionPoint(startPoint, direction, shapeToIgnore);
                 if (intersectionPoint != null) {
                     double distance = intersectionPoint.sub(startPoint).getMagnitude();
                     if (distance < smallestDistance) {
@@ -102,6 +118,11 @@ public class Group extends Shape {
     @Override
     protected Vector3D getLargestPointInBoundingBox() {
         return boundingCubeEndPoint;
+    }
+
+    @Override
+    protected Shape getShape() {
+        return lastShape.getShape();
     }
 
     @Override
@@ -166,11 +187,22 @@ public class Group extends Shape {
         }
     }
 
+    @Override
+    public List<Shape> getShapes() {
+        return shapes;
+    }
+
     public void setParent(Group parent) {
         this.parent = parent;
     }
 
     public Group getParent() {
         return parent;
+    }
+
+    public void groupUp() {
+        if (shapes.size() > 0) {
+            shapes = Utils.groupUpShapes(shapes).getShapes();
+        }
     }
 }

@@ -18,7 +18,7 @@ public class GenerateChessDemo {
 
         PrintWriter writer = new PrintWriter("ChessDemo.RE", "UTF-8");
         writer.println("VERSION 1");
-        writer.println("SIZE 192 108");
+        writer.println("SIZE 1920 1080");
 
         writer.println("NEW LIGHT 5 5 2 " + Light.LIGHT_FADING_LINEAR + " 20 light1");
 

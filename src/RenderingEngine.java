@@ -64,7 +64,7 @@ public class RenderingEngine {
                 if (count >= maxRayCastingRecursionDepth) {
                     break;
                 }
-                tempHitPoint = firstShapeInDirectionToLightSource.getIntersectionPoint(tempHitPoint, directionToLight);
+                tempHitPoint = firstShapeInDirectionToLightSource.getIntersectionPoint(tempHitPoint, directionToLight, shapeToIgnore);
                 if (tempHitPoint.sub(hitPoint).getMagnitude() > distanceToLight) {
                     break;
                 }
@@ -90,10 +90,10 @@ public class RenderingEngine {
             if (s == shapeToIgnore) { // yes i mean a reference comparison -_-
                 continue;
             }
-            double distance = s.getDistance(startPoint, direction);
+            double distance = s.getDistance(startPoint, direction, shapeToIgnore);
             if (distance < smallestDistance) {
                 smallestDistance = distance;
-                closestShape = s;
+                closestShape = s.getShape();
             }
         }
         return closestShape;
@@ -216,5 +216,14 @@ public class RenderingEngine {
         for (Shape shape : shapes) {
             shape.removeByName(name);
         }
+    }
+
+    public void groupUp() {
+        for (Shape s : shapes) {
+            if (s.getClass() == Group.class) {
+                ((Group)s).groupUp();
+            }
+        }
+        shapes = Utils.groupUpShapes(shapes).getShapes();
     }
 }
