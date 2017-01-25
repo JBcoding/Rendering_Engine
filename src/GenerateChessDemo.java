@@ -16,7 +16,7 @@ public class GenerateChessDemo {
     public static void createImage() throws FileNotFoundException, UnsupportedEncodingException {
         int i = 0;
 
-        PrintWriter writer = new PrintWriter("ChessDemo.RE", "UTF-8");
+        PrintWriter writer = new PrintWriter("ChessDemoMirror.RE", "UTF-8");
         writer.println("VERSION 1");
         writer.println("SIZE 1920 1080");
 
@@ -49,6 +49,8 @@ public class GenerateChessDemo {
             makePawn(new Vector3D(6.25, 0, ii), c2, null, writer);
         }
 
+        addMirrorBox(writer);
+
         System.out.println("Done generating world!");
 
         for (; i < 300; i ++) {
@@ -65,6 +67,52 @@ public class GenerateChessDemo {
         }
 
         writer.close();
+    }
+
+    public static void addMirrorBox(PrintWriter writer) {
+        writer.println("NEW GROUP");
+        Vector3D p1 = new Vector3D(-21.5, -.15, -15.5);
+        Vector3D p2 = new Vector3D(-21.5, -.15, 15.5);
+        Vector3D p3 = new Vector3D(21.5, -.15, -15.5);
+        Vector3D p4 = new Vector3D(21.5, -.15, 15.5);
+        Vector3D p5 = new Vector3D(-21.5, 21, -15.5);
+        Vector3D p6 = new Vector3D(-21.5, 21, 15.5);
+        Vector3D p7 = new Vector3D(21.5, 21, -15.5);
+        Vector3D p8 = new Vector3D(21.5, 21, 15.5);
+
+        double REFLECTIVENESS = .75;
+
+        addTriangleFromPoints(writer, p1, p2, p3);
+        writer.println("EDIT SHAPE NULL REFLECTIVENESS " + REFLECTIVENESS);
+        addTriangleFromPoints(writer, p2, p3, p4);
+        writer.println("EDIT SHAPE NULL REFLECTIVENESS " + REFLECTIVENESS);
+
+        addTriangleFromPoints(writer, p5, p6, p7);
+        writer.println("EDIT SHAPE NULL REFLECTIVENESS " + REFLECTIVENESS);
+        addTriangleFromPoints(writer, p6, p7, p8);
+        writer.println("EDIT SHAPE NULL REFLECTIVENESS " + REFLECTIVENESS);
+
+        addTriangleFromPoints(writer, p1, p2, p5);
+        writer.println("EDIT SHAPE NULL REFLECTIVENESS " + REFLECTIVENESS);
+        addTriangleFromPoints(writer, p2, p5, p6);
+        writer.println("EDIT SHAPE NULL REFLECTIVENESS " + REFLECTIVENESS);
+
+        addTriangleFromPoints(writer, p3, p4, p7);
+        writer.println("EDIT SHAPE NULL REFLECTIVENESS " + REFLECTIVENESS);
+        addTriangleFromPoints(writer, p4, p7, p8);
+        writer.println("EDIT SHAPE NULL REFLECTIVENESS " + REFLECTIVENESS);
+
+        addTriangleFromPoints(writer, p1, p3, p5);
+        writer.println("EDIT SHAPE NULL REFLECTIVENESS " + REFLECTIVENESS);
+        addTriangleFromPoints(writer, p3, p5, p7);
+        writer.println("EDIT SHAPE NULL REFLECTIVENESS " + REFLECTIVENESS);
+
+        addTriangleFromPoints(writer, p2, p4, p6);
+        writer.println("EDIT SHAPE NULL REFLECTIVENESS " + REFLECTIVENESS);
+        addTriangleFromPoints(writer, p4, p6, p8);
+        writer.println("EDIT SHAPE NULL REFLECTIVENESS " + REFLECTIVENESS);
+
+        writer.println("END GROUP");
     }
 
     public static void addColorToShape(PrintWriter writer, Color color) {
