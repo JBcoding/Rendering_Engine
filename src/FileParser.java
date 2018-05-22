@@ -28,7 +28,12 @@ public final class FileParser {
 
         Group currentGroup = null;
 
+        int i = 0;
         while (input.hasNextLine()) {
+            if (i % 1000 == 0) {
+                System.out.println(i);
+            }
+            i ++;
             line = input.nextLine();
             String[] parts = line.split(" ");
             if (parts[0].equals("NEW")) {

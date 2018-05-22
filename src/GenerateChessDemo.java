@@ -16,9 +16,9 @@ public class GenerateChessDemo {
     public static void createImage() throws FileNotFoundException, UnsupportedEncodingException {
         int i = 0;
 
-        PrintWriter writer = new PrintWriter("ChessDemoMirror.RE", "UTF-8");
+        PrintWriter writer = new PrintWriter("ChessDemo.RE", "UTF-8");
         writer.println("VERSION 1");
-        writer.println("SIZE 1920 1080");
+        writer.println("SIZE 5374 3602");
 
         writer.println("NEW LIGHT 5 5 2 " + Light.LIGHT_FADING_LINEAR + " 20 light1");
 
@@ -49,7 +49,7 @@ public class GenerateChessDemo {
             makePawn(new Vector3D(6.25, 0, ii), c2, null, writer);
         }
 
-        addMirrorBox(writer);
+        //addMirrorBox(writer);
 
         System.out.println("Done generating world!");
 

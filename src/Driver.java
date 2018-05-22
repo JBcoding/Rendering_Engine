@@ -15,7 +15,7 @@ public class Driver {
     public static void createImages(String fileName, int imageNumber) throws IOException {
         long startTime = System.nanoTime();
         RenderingEngine r = FileParser.parseFileToImageNumber(new File(fileName), imageNumber);
-        BufferedImage image = r.renderImage();
+        BufferedImage image = r.renderImage(4);
         File file = new File("image" + imageNumber + ".png");
         ImageIO.write(image, "png", file);
         System.out.println("Frame: " + imageNumber + "\t\tTime: " + (System.nanoTime() - startTime) / 1e9 + " seconds");

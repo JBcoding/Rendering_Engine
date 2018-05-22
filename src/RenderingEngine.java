@@ -96,6 +96,7 @@ public class RenderingEngine {
                 closestShape = s.getShape();
             }
         }
+
         return closestShape;
     }
 
@@ -123,10 +124,17 @@ public class RenderingEngine {
     }
 
     public synchronized BufferedImage renderImage() {
+        return renderImage(1);
+    }
+
+    public synchronized BufferedImage renderImage(int antialiasing) {
+        imageWidth *= antialiasing;
+        imageHeight *= antialiasing;
+
         double aspectRatio = (double)imageWidth / imageHeight;
         double cameraWidthInRadians = 1.5; // in range ]0; pi / 2[,   note pi / 2 is NOT in the acceptable interval
         double cameraHeightInRadians = Math.asin(Math.sin(cameraWidthInRadians) / aspectRatio);
-        int[] pixels = new int[imageWidth * imageHeight];
+        Color[][] pixels = new Color[imageWidth][imageHeight];
 
         // Yaw, pitch, and roll rotations
         // https://www.grc.nasa.gov/www/k-12/airplane/Images/rotations.gif
@@ -141,6 +149,9 @@ public class RenderingEngine {
         currentRayCastingColorFraction = 1;
 
         for (int x = 0; x < imageWidth; x ++) {
+            if (x % 8 == 0) {
+                System.out.println("A:" + (100.0 * x / imageWidth));
+            }
             for (int y = 0; y < imageHeight; y ++) {
                 double px = (x + 0.5) / imageWidth;
                 double py = (y + 0.5) / imageHeight;
@@ -150,11 +161,33 @@ public class RenderingEngine {
                 direction = direction.add(topSide.scale(1 - py));
                 direction = direction.add(bottomSide.scale(py));
                 direction = direction.getUnitVector();
-                pixels[y * imageWidth + x] = getColorByRaycast(cameraPosition, direction, null).getRGB();
+                pixels[x][y] = getColorByRaycast(cameraPosition, direction, null);
             }
         }
+
+        imageWidth /= antialiasing;
+        imageHeight /= antialiasing;
+        int[] antialiasingPixels = new int[imageWidth * imageHeight];
+        for (int x = 0; x < imageWidth; x ++) {
+            for (int y = 0; y < imageHeight; y ++) {
+                int red, green, blue;
+                red = green = blue = 0;
+                for (int dx = 0; dx < antialiasing; dx ++) {
+                    for (int dy = 0; dy < antialiasing; dy ++) {
+                        red += pixels[x * antialiasing + dx][y * antialiasing + dy].getRed();
+                        green += pixels[x * antialiasing + dx][y * antialiasing + dy].getGreen();
+                        blue += pixels[x * antialiasing + dx][y * antialiasing + dy].getBlue();
+                    }
+                }
+                red /= antialiasing * antialiasing;
+                green /= antialiasing * antialiasing;
+                blue /= antialiasing * antialiasing;
+                antialiasingPixels[y * imageWidth + x] = (new Color(red, green, blue)).getRGB();
+            }
+        }
+
         BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
-        image.setRGB(0, 0, imageWidth, imageHeight, pixels, 0, imageWidth);
+        image.setRGB(0, 0, imageWidth, imageHeight, antialiasingPixels, 0, imageWidth);
 
         return image;
     }
